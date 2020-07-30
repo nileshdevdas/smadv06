@@ -1,0 +1,19 @@
+const metric = {
+  MetricData: [{
+      MetricName: 'YOUR_METRIC_NAME',
+      /* required */
+      Dimensions: [{
+          Name: 'FILE_PROCESSING',
+          /* required */
+          Value: "RECORDS_PROCESSED" /* required */
+        },
+        /* more items */
+      ],
+      Timestamp: new Date(),
+      Unit: 'Count',
+      Value: 100
+    },
+    /* more items */
+  ],
+  Namespace: 'nilapp' /* required */
+};
