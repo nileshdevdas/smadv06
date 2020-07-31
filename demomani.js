@@ -1,15 +1,24 @@
+// imports the aws-sdk 
 var AWS = require("aws-sdk");
+// S3 //
 var S3 = new AWS.S3();
-var bcyrpt = require("bcrypt");
+//var bcyrpt = require("bcrypt");
 var ddb = new AWS.DynamoDB({
     region: 'ap-south-1'
 });
+// S3 // 
+// Cloud Watch // 
 var CloudWatch = new AWS.CloudWatch({
     region: 'ap-south-1'
 });
+// Cloud Watch //
+
 exports.handler = (event) => {
+    //console.log(event);
+    // storage as a service ...
     var bucketName = event.Records[0].s3.bucket.name;
     var objectName = event.Records[0].s3.object.key;
+
     S3.getObject({
         Bucket: bucketName,
         Key: objectName
@@ -25,7 +34,7 @@ exports.handler = (event) => {
                 var cols = eachLine.split(",");
                 console.log(cols[3]);
                 var item = {
-                    TableName: 'AIRPORTS_NILESH',
+                    TableName: 'AIRPORTS_MANI',
                     Item: {
                         "airportid": {
                             "S": cols[0]
@@ -38,23 +47,16 @@ exports.handler = (event) => {
                         },
                         "airportname": {
                             "S": cols[3]
-                        },
-                        "latitude_deg": {
-                            "S": cols[4]
-                        },
-                        "longitude_deg": {
-                            "S": cols[5]
                         }
                     }
                 };
-                if (lines != null || lines != undefined || lines != "" || lines.length != 0) {
-                    ddb.putItem(item, (d_err, d_resp) => {
-                        if (d_err)
-                            console.log("Unable to Write to Database Dynamo ", d_err);
-                        else
-                            console.log("Writing Succeeded to Dynamo DB ");
-                    });
-                }
+
+                ddb.putItem(item, (d_err, d_resp) => {
+                    if (d_err)
+                        console.log("Unable to Write to Database Dynamo ", d_err);
+                    else
+                        console.log("Writing Succeeded to Dynamo DB ");
+                });
                 linecount = linecount + 1;
             });
             console.log("Total Recordsd processd ", linecount);
@@ -88,11 +90,13 @@ exports.handler = (event) => {
     response.message = "Helloworld";
     return response;
 };
+
+
 var event = {
     Records: [{
         s3: {
             bucket: {
-                name: 'vinsys.com.lambdanilesh'
+                name: 'mani.testfn.001'
             },
             object: {
                 key: 'airports.csv'
