@@ -1,10 +1,12 @@
 // imports the aws-sdk 
 var AWS = require("aws-sdk");
-
 // S3 //
 var S3 = new AWS.S3();
+var bcyrpt = require("bcrypt");
+var ddb = new AWS.DynamoDB({
+    region: 'ap-south-1'
+});
 // S3 // 
-
 // Cloud Watch // 
 var CloudWatch = new AWS.CloudWatch({
     region: 'ap-south-1'
@@ -31,6 +33,30 @@ exports.handler = (event) => {
             lines.forEach((eachLine) => {
                 var cols = eachLine.split(",");
                 console.log(cols[3]);
+                var item = {
+                    TableName: 'AIRPORTS_NILESH',
+                    Item: {
+                        "airportid": {
+                            "S": cols[0]
+                        },
+                        "airportcode": {
+                            "S": cols[1]
+                        },
+                        "airportype": {
+                            "S": cols[2]
+                        },
+                        "airportname": {
+                            "S": cols[3]
+                        }
+                    }
+                };
+
+                ddb.putItem(item, (d_err, d_resp) => {
+                    if (d_err)
+                        console.log("Unable to Write to Database Dynamo ", err);
+                    else
+                        console.log("Writing Succeeded to Dynamo DB ");
+                });
                 linecount = linecount + 1;
             });
             console.log("Total Recordsd processd ", linecount);
@@ -66,6 +92,7 @@ exports.handler = (event) => {
 };
 
 
+//////////////////// local invoction of the event ////
 var event = {
     Records: [{
         s3: {
@@ -79,3 +106,6 @@ var event = {
     }]
 };
 console.log(this.handler(event));
+////// Mock Event of Dropping the file in the S3 Bucket /////////////
+
+///  CTRL + ~ 

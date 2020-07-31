@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "aws-sdk": "^2.705.0",
+    "bcrypt": "^5.0.0",
     "mqtt": "^4.1.0"
   }
 }
